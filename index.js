@@ -10,7 +10,7 @@ import { createSpinner } from 'nanospinner'
 const sleep = (ms = 2000) => new Promise((r) => setTimeout(r,ms));
 
 // Initialize the Inquirer prompt
-async function Introduction() {
+async function introduction() {
     const title = chalkAnimation.neon((chalk.red(
         'LETS CREATE A README THE USER FRIENDLY WAY \n'
         )));
@@ -20,13 +20,14 @@ async function Introduction() {
         console.log(`Here you will input all the necessary information for you README.md file. \n`);
 }
 
-await Introduction();
+await introduction();
 
 const questions = [
     {
         type: 'input',
         name: 'title',
         message: 'Please enter a project title:',
+        default: 'NEW PROJECT',
       },
       {
         type: 'input',
@@ -63,14 +64,24 @@ const questions = [
         type: 'input',
         name: 'github',
         message: 'Please enter your GitHub username:',
+        required: true,
       },
       {
         type: 'input',
         name: 'email',
         message: 'Please enter your email address:',
+        required: true,
       }
       
 ];
+
+async function handleAnswers(answers) {
+    const spinner = createSpinner('Generating README.md').start();
+    await sleep();
+
+    spinner.succeed('README.md Generated Successfully!');
+    console.log(answers);
+};
 
 function createREADME(fileName, data) {
     fs.writeFile(fileName, data, (err) =>
@@ -81,6 +92,7 @@ function createREADME(fileName, data) {
 function init() {
     inquirer.prompt(questions) 
     .then((answers) => {
+        handleAnswers(answers);
         const markdownContent = generateMarkdown(answers);
         createREADME('./README.md', markdownContent);
     });
