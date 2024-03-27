@@ -11,7 +11,7 @@ const sleep = (ms = 2000) => new Promise((r) => setTimeout(r,ms));
 
 // Initialize the Inquirer prompt
 async function Introduction() {
-    const title = chalkAnimation.neon(chalk.bgBlue((
+    const title = chalkAnimation.neon((chalk.red(
         'LETS CREATE A README THE USER FRIENDLY WAY \n'
         )));
         await sleep();
@@ -71,3 +71,20 @@ const questions = [
       }
       
 ];
+
+function createREADME(fileName, data) {
+    fs.writeFile(fileName, data, (err) =>
+        err ? console.log(err) : console.log('Success! README.md Created!')
+    );
+}
+
+function init() {
+    inquirer.prompt(questions) 
+    .then((answers) => {
+        const markdownContent = generateMarkdown(answers);
+        createREADME('./README.md', markdownContent);
+    });
+}
+
+
+init();
