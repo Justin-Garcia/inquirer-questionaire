@@ -5,6 +5,8 @@ import gradient from 'gradient-string';
 import chalkAnimation from 'chalk-animation'
 import figlet from 'figlet';
 import { createSpinner } from 'nanospinner'
+import fs from 'fs';
+import generateMarkdown from './utils/generateMarkdown.js';
 
 // Set sleep timer
 const sleep = (ms = 2000) => new Promise((r) => setTimeout(r,ms));
@@ -26,77 +28,84 @@ const questions = [
     {
         type: 'input',
         name: 'title',
-        message: 'Please enter a project title:',
+        message: chalk.blue('Please enter a project title:'),
         default: 'NEW PROJECT',
       },
       {
         type: 'input',
         name: 'description',
-        message: 'Please enter a project description:',
+        message: chalk.blue('Please enter a project description:'),
       },
       {
         type: 'input',
         name: 'installation',
-        message: 'Please enter installation instructions:',
+        message: chalk.blue('Please enter installation instructions:'),
       },
       {
         type: 'input',
         name: 'usage',
-        message: 'Please enter usage information:',
+        message: chalk.blue('Please enter usage information:'),
       },
       {
         type: 'input',
         name: 'contributing',
-        message: 'Please enter contribution guidelines:',
+        message: chalk.blue('Please enter contribution guidelines:'),
       },
       {
         type: 'input',
         name: 'tests',
-        message: 'Please enter test instructions:',
+        message: chalk.blue('Please enter test instructions:'),
       },
       {
         type: 'list',
         name: 'license',
-        message: 'Please choose a license for your project:',
+        message: chalk.blue('Please choose a license for your project:'),
         choices: ['MIT', 'BSD', 'Apache 2.0', 'GNU', 'ISC', 'None'],
       },
       {
         type: 'input',
         name: 'github',
-        message: 'Please enter your GitHub username:',
+        message: chalk.blue('Please enter your GitHub username:'),
         required: true,
       },
       {
         type: 'input',
         name: 'email',
-        message: 'Please enter your email address:',
+        message: chalk.blue('Please enter your email address:'),
         required: true,
       }
       
 ];
 
-async function handleAnswers(answers) {
-    const spinner = createSpinner('Generating README.md').start();
+// async function handleAnswers(created) {
+//     const spinner = createSpinner('Generating README.md').start();
+//     await sleep();
+
+//     if (!created) {
+//         spinner.fail('README.md Generation Failed!');
+//         return console.log('Error: Answers are null');
+//     } else {
+//         spinner.success('README.md Generated Successfully!');
+//         console.log(answers);
+//     }
+// };
+
+async function createREADME(fileName, data) {
+    const spinner = createSpinner(`Generating README.md`).start();
     await sleep();
 
-    spinner.succeed('README.md Generated Successfully!');
-    console.log(answers);
-};
-
-function createREADME(fileName, data) {
     fs.writeFile(fileName, data, (err) =>
-        err ? console.log(err) : console.log('Success! README.md Created!')
+        err ?  spinner.error('README.md Generation Failed!')
+         : spinner.success('README.md Generated Successfully!')
     );
 }
 
 function init() {
     inquirer.prompt(questions) 
     .then((answers) => {
-        handleAnswers(answers);
         const markdownContent = generateMarkdown(answers);
         createREADME('./README.md', markdownContent);
     });
 }
-
 
 init();
